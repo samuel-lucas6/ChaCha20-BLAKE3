@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>ChaCha20BLAKE3</RootNamespace>
+    <AssemblyName>ChaCha20BLAKE3</AssemblyName>
+    <Description>A committing AEAD implementation.</Description>
+    <Authors>Samuel Lucas</Authors>
+    <Copyright>Copyright (c) 2021 Samuel Lucas</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/samuel-lucas6/ChaCha20-BLAKE3</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/samuel-lucas6/ChaCha20-BLAKE3</RepositoryUrl>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Blake3" Version="0.3.0" />
+    <PackageReference Include="Sodium.Core" Version="1.2.3" />
+  </ItemGroup>
+
+</Project>
