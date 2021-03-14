@@ -85,36 +85,36 @@ byte[] plaintext = XChaCha20_BLAKE3.Decrypt(ciphertext, nonce, key, additionalDa
 ```
 
 ## How fast is it?
-ChaCha20-BLAKE3 is faster than ChaCha20-Poly1305 for large inputs but slower for small-medium sized messages.
+ChaCha20-BLAKE3 is faster than ChaCha20-Poly1305 for large inputs but slightly slower for small-medium sized messages.
 
-The following benchmarks were done using [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet/) in a .NET Core 3.1 console application with 16 bytes of additional data.
+The following benchmarks were done using [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet/) in a .NET 5 console application with 16 bytes of additional data.
 
 34.1 MiB JPG file:
 |                 Function |     Mean |    Error |   StdDev |
 |------------------------- |----------|----------|----------|
-| **ChaCha20-BLAKE3.Encrypt** | **46.43 ms** | **0.558 ms** | **0.522 ms** |
-| **ChaCha20-BLAKE3.Decrypt** | **45.12 ms** | **0.551 ms** | **0.515 ms** |
-| ChaCha20-Poly1305.Encrypt | 53.40 ms | 0.067 ms | 0.056 ms |
-| ChaCha20-Poly1305.Decrypt | 53.65 ms | 0.191 ms | 0.149 ms |
-| ChaCha20-Poly1305.Encrypt (with padding fix) | 65.46 ms | 0.236 ms | 0.197 ms |
-| ChaCha20-Poly1305.Decrypt (with padding fix) | 65.47 ms | 0.261 ms | 0.231 ms |
+| **ChaCha20-BLAKE3.Encrypt** | **46.93 ms** | **0.791 ms** | **0.701 ms** |
+| **ChaCha20-BLAKE3.Decrypt** | **47.97 ms** | **0.937 ms** | **1.079 ms** |
+| ChaCha20-Poly1305.Encrypt | 57.25 ms | 1.113 ms | 1.143 ms |
+| ChaCha20-Poly1305.Decrypt | 56.65 ms | 0.841 ms | 0.787 ms |
+| ChaCha20-Poly1305.Encrypt (with padding fix) | 69.26 ms | 0.620 ms | 0.550 ms |
+| ChaCha20-Poly1305.Decrypt (with padding fix) | 69.33 ms | 0.782 ms | 0.732 ms |
 
-16 KiB text file:
+16.1 KiB Kryptor file:
 |                 Function |     Mean |    Error |   StdDev |
 |------------------------- |----------|----------|----------|
-| **ChaCha20-BLAKE3.Encrypt** | **46.90 ms** | **0.630 ms** | **0.589 ms** |
-| **ChaCha20-BLAKE3.Decrypt** | **44.73 ms** | **0.179 ms** | **0.167 ms** |
-| ChaCha20-Poly1305.Encrypt | 16.95 us | 0.028 us | 0.023 us |
-| ChaCha20-Poly1305.Decrypt | 16.94 us | 0.021 us | 0.018 us |
-| ChaCha20-Poly1305.Encrypt (with padding fix) | 17.71 us | 0.085 us | 0.079 us |
-| ChaCha20-Poly1305.Decrypt (with padding fix) | 17.90 us | 0.059 us | 0.055 us |
+| **ChaCha20-BLAKE3.Encrypt** | **21.74 us** | **0.043 us** | **0.038 us** |
+| **ChaCha20-BLAKE3.Decrypt** | **21.61 us** | **0.190 us** | **0.158 us** |
+| ChaCha20-Poly1305.Encrypt | 17.49 us | 0.034 us | 0.027 us |
+| ChaCha20-Poly1305.Decrypt | 17.48 us | 0.020 us | 0.016 us |
+| ChaCha20-Poly1305.Encrypt (with padding fix) | 18.23 us | 0.034 us | 0.029 us |
+| ChaCha20-Poly1305.Decrypt (with padding fix) | 18.46 us | 0.030 us | 0.024 us |
 
-92 byte text file:
+128 byte text file:
 |                 Function |     Mean |    Error |   StdDev |
 |------------------------- |----------|----------|----------|
-| **ChaCha20-BLAKE3.Encrypt** | **47.31 ms** | **0.827 ms** | **0.774 ms** |
-| **ChaCha20-BLAKE3.Decrypt** | **46.45 ms** | **0.672 ms** | **0.628 ms** |
-| ChaCha20-Poly1305.Encrypt | 500.4 ns | 0.48 ns | 0.40 ns |
-| ChaCha20-Poly1305.Decrypt | 515.8 ns | 0.69 ns | 0.61 ns |
-| ChaCha20-Poly1305.Encrypt (with padding fix) | 540.5 ns | 0.50 ns | 0.42 ns |
-| ChaCha20-Poly1305.Decrypt (with padding fix) | 605.2 ns | 0.72 ns | 0.60 ns |
+| **ChaCha20-BLAKE3.Encrypt** | **1.109 us** | **0.0038 us** | **0.0032 us** |
+| **ChaCha20-BLAKE3.Decrypt** | **1.168 us** | **0.0087 us** | **0.0082 us** |
+| ChaCha20-Poly1305.Encrypt | 518.4 ns | 0.67 ns | 0.59 ns |
+| ChaCha20-Poly1305.Decrypt | 542.5 ns | 0.59 ns | 0.55 ns |
+| ChaCha20-Poly1305.Encrypt (with padding fix) | 651.6 ns | 4.48 ns | 4.19 ns |
+| ChaCha20-Poly1305.Decrypt (with padding fix) | 695.0 ns | 0.46 ns | 0.38 ns |
