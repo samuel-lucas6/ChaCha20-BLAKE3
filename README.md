@@ -31,7 +31,7 @@ This library does several things for you:
 3. Click on the ```Project``` tab and ```Add Project Reference...``` in Visual Studio.
 4. Go to ```Browse```, click the ```Browse``` button, and select the downloaded DLL file.
 
-Note that the [libsodium](https://doc.libsodium.org/) library requires the [Visual C++ Redistributable for Visual Studio 2015-2019](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads) to work on Windows. If you want your program to be portable, you must keep the ```vcruntime140.dll``` file in the same folder as the executable on Windows.
+Note that the [libsodium](https://doc.libsodium.org/) library requires the [Visual C++ Redistributable for Visual Studio 2015-2019](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads) to work on Windows. If you want your program to be portable, then you must keep the relevant (x86 or x64) ```vcruntime140.dll``` file in the same folder as your executable on Windows.
 
 ### ChaCha20
 ⚠️**WARNING: Never reuse a nonce with the same key.**
