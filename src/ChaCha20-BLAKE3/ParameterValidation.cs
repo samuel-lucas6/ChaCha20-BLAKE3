@@ -1,7 +1,7 @@
 ﻿using System;
 
 /*
-    ChaCha20-BLAKE3: A committing AEAD implementation.
+    ChaCha20-BLAKE3: Committing ChaCha20-BLAKE3, XChaCha20-BLAKE3, and XChaCha20-BLAKE3-SIV implementations.
     Copyright (c) 2021 Samuel Lucas
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -31,15 +31,16 @@ namespace ChaCha20BLAKE3
         {
             if (message == null)
             {
-                throw new ArgumentNullException(nameof(message), "Message cannot be null.");
+                throw new ArgumentNullException(nameof(message), "The message cannot be null.");
             }
         }
 
         internal static void Ciphertext(byte[] ciphertext)
         {
-            if (ciphertext == null)
+            int validLength = Constants.TagLength + 1;
+            if (ciphertext.Length < validLength)
             {
-                throw new ArgumentNullException(nameof(ciphertext), "Ciphertext cannot be null.");
+                throw new ArgumentOutOfRangeException(nameof(ciphertext), (ciphertext == null) ? 0 : ciphertext.Length, $"The ciphertext must be at least {validLength} bytes in length.");
             }
         }
 
@@ -47,7 +48,7 @@ namespace ChaCha20BLAKE3
         {
             if (nonce == null || nonce.Length != validNonceLength)
             {
-                throw new ArgumentOutOfRangeException(nameof(nonce), (nonce == null) ? 0 : nonce.Length, $"Nonce must be {validNonceLength} bytes in length.");
+                throw new ArgumentOutOfRangeException(nameof(nonce), (nonce == null) ? 0 : nonce.Length, $"The nonce must be {validNonceLength} bytes in length.");
             }
         }
 
@@ -55,7 +56,7 @@ namespace ChaCha20BLAKE3
         {
             if (key == null || key.Length != validKeyLength)
             {
-                throw new ArgumentOutOfRangeException(nameof(key), (key == null) ? 0 : key.Length, $"Key must be {validKeyLength} bytes in length.");
+                throw new ArgumentOutOfRangeException(nameof(key), (key == null) ? 0 : key.Length, $"The key must be {validKeyLength} bytes in length.");
             }
         }
 

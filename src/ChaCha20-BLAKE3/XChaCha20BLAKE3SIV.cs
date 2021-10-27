@@ -26,47 +26,51 @@ using Sodium;
 
 namespace ChaCha20BLAKE3
 {
-    public static class XChaCha20_BLAKE3
+    public static class XChaCha20_BLAKE3_SIV
     {
-        /// <summary>Encrypts a message using XChaCha20-BLAKE3.</summary>
+        /// <summary>Encrypts a message using XChaCha20-BLAKE3-SIV.</summary>
         /// <param name="message">The message to encrypt.</param>
-        /// <param name="nonce">The 24 byte nonce.</param>
-        /// <param name="key">The 32 byte key.</param>
+        /// <param name="key">The 64 byte key.</param>
         /// <param name="additionalData">Optional additional data to authenticate.</param>
-        /// <remarks>Never reuse a nonce with the same key. A random nonce is recommended.</remarks>
         /// <returns>The ciphertext and tag.</returns>
-        public static byte[] Encrypt(byte[] message, byte[] nonce, byte[] key, byte[] additionalData = null)
+        public static byte[] Encrypt(byte[] message, byte[] key, byte[] additionalData = null)
         {
             ParameterValidation.Message(message);
-            ParameterValidation.Nonce(nonce, Constants.XChaChaNonceLength);
-            ParameterValidation.Key(key, Constants.KeyLength);
+            ParameterValidation.Key(key, Constants.KeyLength * 2);
             additionalData = ParameterValidation.AdditionalData(additionalData);
-            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(nonce, key);
-            byte[] ciphertext = StreamEncryption.EncryptXChaCha20(message, nonce, encryptionKey);
-            byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConversion.GetBytes(additionalData.Length), BitConversion.GetBytes(ciphertext.Length));
+            (byte[] macKey, byte[] encryptionKey) = KeyDerivation.DeriveKeysSIV(key);
+            byte[] tagMessage = Arrays.Concat(additionalData, message, BitConversion.GetBytes(additionalData.Length), BitConversion.GetBytes(message.Length));
             byte[] tag = Tag.Compute(tagMessage, macKey);
+            byte[] nonce = Tag.GetNonce(tag);
+            byte[] ciphertext = StreamEncryption.EncryptXChaCha20(message, nonce, encryptionKey);
             return Arrays.Concat(ciphertext, tag);
         }
 
-        /// <summary>Decrypts a ciphertext message using XChaCha20-BLAKE3.</summary>
+        /// <summary>Decrypts a ciphertext message using XChaCha20-BLAKE3-SIV.</summary>
         /// <param name="ciphertext">The ciphertext to decrypt.</param>
-        /// <param name="nonce">The 24 byte nonce.</param>
-        /// <param name="key">The 32 byte key.</param>
+        /// <param name="key">The 64 byte key.</param>
         /// <param name="additionalData">Optional additional data to authenticate.</param>
         /// <returns>The decrypted message.</returns>
-        public static byte[] Decrypt(byte[] ciphertext, byte[] nonce, byte[] key, byte[] additionalData = null)
+        public static byte[] Decrypt(byte[] ciphertext, byte[] key, byte[] additionalData = null)
         {
             ParameterValidation.Ciphertext(ciphertext);
-            ParameterValidation.Nonce(nonce, Constants.XChaChaNonceLength);
-            ParameterValidation.Key(key, Constants.KeyLength);
+            ParameterValidation.Key(key, Constants.KeyLength * 2);
             additionalData = ParameterValidation.AdditionalData(additionalData);
-            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(nonce, key);
+            (byte[] macKey, byte[] encryptionKey) = KeyDerivation.DeriveKeysSIV(key);
             byte[] tag = Tag.Read(ciphertext);
             ciphertext = Tag.Remove(ciphertext);
-            byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConversion.GetBytes(additionalData.Length), BitConversion.GetBytes(ciphertext.Length));
+            byte[] nonce = Tag.GetNonce(tag);
+            byte[] message = StreamEncryption.DecryptXChaCha20(ciphertext, nonce, encryptionKey);
+            byte[] tagMessage = Arrays.Concat(additionalData, message, BitConversion.GetBytes(additionalData.Length), BitConversion.GetBytes(message.Length));
             byte[] computedTag = Tag.Compute(tagMessage, macKey);
             bool validTag = Utilities.Compare(tag, computedTag);
-            return !validTag ? throw new CryptographicException() : StreamEncryption.DecryptXChaCha20(ciphertext, nonce, encryptionKey);
+            if (!validTag)
+            {
+                CryptographicOperations.ZeroMemory(message);
+                CryptographicOperations.ZeroMemory(computedTag);
+                throw new CryptographicException();
+            }
+            return message;
         }
     }
 }

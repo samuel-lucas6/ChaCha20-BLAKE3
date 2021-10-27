@@ -1,7 +1,8 @@
 ﻿using System;
+using Blake3;
 
 /*
-    ChaCha20-BLAKE3: A committing AEAD implementation.
+    ChaCha20-BLAKE3: Committing ChaCha20-BLAKE3, XChaCha20-BLAKE3, and XChaCha20-BLAKE3-SIV implementations.
     Copyright (c) 2021 Samuel Lucas
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -27,6 +28,14 @@ namespace ChaCha20BLAKE3
 {
     internal static class Tag
     {
+        internal static byte[] Compute(byte[] message, byte[] macKey)
+        {
+            using var blake3 = Hasher.NewKeyed(macKey);
+            blake3.UpdateWithJoin(message);
+            var tag = blake3.Finalize();
+            return tag.AsSpan().ToArray();
+        }
+
         internal static byte[] Read(byte[] ciphertext)
         {
             byte[] tag = new byte[Constants.TagLength];
@@ -39,6 +48,13 @@ namespace ChaCha20BLAKE3
             byte[] ciphertext = new byte[ciphertextWithTag.Length - Constants.TagLength];
             Array.Copy(ciphertextWithTag, sourceIndex: 0, ciphertext, destinationIndex: 0, ciphertext.Length);
             return ciphertext;
+        }
+
+        internal static byte[] GetNonce(byte[] tag)
+        {
+            var nonce = new byte[Constants.XChaChaNonceLength];
+            Array.Copy(tag, nonce, nonce.Length);
+            return nonce;
         }
     }
 }

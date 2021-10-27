@@ -1,9 +1,8 @@
 ﻿using System.Security.Cryptography;
 using Sodium;
-using Blake3;
 
 /*
-    ChaCha20-BLAKE3: A committing AEAD implementation.
+    ChaCha20-BLAKE3: Committing ChaCha20-BLAKE3, XChaCha20-BLAKE3, and XChaCha20-BLAKE3-SIV implementations.
     Copyright (c) 2021 Samuel Lucas
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -44,11 +43,9 @@ namespace ChaCha20BLAKE3
             additionalData = ParameterValidation.AdditionalData(additionalData);
             (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(nonce, key);
             byte[] ciphertext = StreamEncryption.EncryptChaCha20(message, nonce, encryptionKey);
-            byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, Arrays.ConvertLength(additionalData.Length), Arrays.ConvertLength(ciphertext.Length));
-            using var blake3 = Hasher.NewKeyed(macKey);
-            blake3.UpdateWithJoin(tagMessage);
-            var tag = blake3.Finalize();
-            return Arrays.Concat(ciphertext, tag.AsSpan().ToArray());
+            byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConversion.GetBytes(additionalData.Length), BitConversion.GetBytes(ciphertext.Length));
+            byte[] tag = Tag.Compute(tagMessage, macKey);
+            return Arrays.Concat(ciphertext, tag);
         }
 
         /// <summary>Decrypts a ciphertext message using ChaCha20-BLAKE3.</summary>
@@ -66,11 +63,9 @@ namespace ChaCha20BLAKE3
             (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(nonce, key);
             byte[] tag = Tag.Read(ciphertext);
             ciphertext = Tag.Remove(ciphertext);
-            byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, Arrays.ConvertLength(additionalData.Length), Arrays.ConvertLength(ciphertext.Length));
-            using var blake3 = Hasher.NewKeyed(macKey);
-            blake3.UpdateWithJoin(tagMessage);
-            var computedTag = blake3.Finalize();
-            bool validTag = Utilities.Compare(tag, computedTag.AsSpan().ToArray());
+            byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConversion.GetBytes(additionalData.Length), BitConversion.GetBytes(ciphertext.Length));
+            byte[] computedTag = Tag.Compute(tagMessage, macKey);
+            bool validTag = Utilities.Compare(tag, computedTag);
             return !validTag ? throw new CryptographicException() : StreamEncryption.DecryptChaCha20(ciphertext, nonce, encryptionKey);
         }
     }

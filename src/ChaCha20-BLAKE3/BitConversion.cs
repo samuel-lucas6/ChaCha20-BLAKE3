@@ -1,5 +1,4 @@
 ﻿using System;
-using Blake3;
 
 /*
     ChaCha20-BLAKE3: Committing ChaCha20-BLAKE3, XChaCha20-BLAKE3, and XChaCha20-BLAKE3-SIV implementations.
@@ -26,30 +25,21 @@ using Blake3;
 
 namespace ChaCha20BLAKE3
 {
-    internal static class KeyDerivation
+    internal class BitConversion
     {
-        internal static (byte[] encryptionKey, byte[] macKey) DeriveKeys(byte[] nonce, byte[] inputKeyingMaterial)
+        public static byte[] GetBytes(int value)
         {
-            byte[] encryptionKey = DeriveKey(inputKeyingMaterial, Constants.EncryptionContext);
-            byte[] macKey = DeriveKey(Arrays.Concat(nonce, inputKeyingMaterial), Constants.AuthenticationContext);
-            return (encryptionKey, macKey);
+            byte[] valueBytes = BitConverter.GetBytes(value);
+            return ToLittleEndian(valueBytes);
         }
 
-        private static byte[] DeriveKey(byte[] inputKeyingMaterial, byte[] context)
+        private static byte[] ToLittleEndian(byte[] value)
         {
-            using var blake3 = Hasher.NewDeriveKey(context);
-            blake3.Update(inputKeyingMaterial);
-            var key = blake3.Finalize();
-            return key.AsSpan().ToArray();
-        }
-
-        internal static (byte[] macKey, byte[] encryptionKey) DeriveKeysSIV(byte[] inputKeyingMaterial)
-        {
-            var macKey = new byte[Constants.KeyLength];
-            Array.Copy(inputKeyingMaterial, macKey, macKey.Length);
-            var encryptionKey = new byte[Constants.KeyLength];
-            Array.Copy(inputKeyingMaterial, sourceIndex: macKey.Length, encryptionKey, destinationIndex: 0, encryptionKey.Length);
-            return (macKey, encryptionKey);
+            if (!BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(value);
+            }
+            return value;
         }
     }
 }
