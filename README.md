@@ -2,38 +2,37 @@
 [![CodeQL](https://github.com/samuel-lucas6/ChaCha20-BLAKE3/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/samuel-lucas6/ChaCha20-BLAKE3/actions)
 
 # ChaCha20-BLAKE3
-A committing AEAD implementation using [libsodium](https://doc.libsodium.org/) and [BLAKE3](https://github.com/BLAKE3-team/BLAKE3). This library supports both [ChaCha20](https://doc.libsodium.org/advanced/stream_ciphers/chacha20) and [XChaCha20](https://doc.libsodium.org/advanced/stream_ciphers/xchacha20).
+Committing ChaCha20-BLAKE3, XChaCha20-BLAKE3, and XChaCha20-BLAKE3-SIV AEAD implementations using [libsodium](https://doc.libsodium.org/) and [BLAKE3](https://github.com/BLAKE3-team/BLAKE3).
 
-## Should I use this?
-*It depends*. This implementation has not been standardised like [ChaCha20-Poly1305](https://tools.ietf.org/html/rfc7539). If that is important to you, then obviously avoid using this.
-
-However, ChaCha20-BLAKE3 is essentially Encrypt-then-MAC with keyed BLAKE3 rather than HMAC. To put things in perspective, the [Signal protocol](https://www.signal.org/docs/specifications/doubleratchet/#recommended-cryptographic-algorithms) uses Encrypt-then-MAC with AES-CBC and HMAC.
-
-## Why should I use this?
+## Features
 This library does several things for you:
-
-- Derives a unique 256-bit encryption key and 256-bit MAC key based on the (master) key and nonce.
+- Derives a 256-bit encryption key and 256-bit MAC key based on the (master) key.
+- Supports additional data in the calculation of the authentication tag, unlike most Encrypt-then-MAC implementations.
 - Appends the authentication tag to the ciphertext.
 - Compares the authentication tags in constant time during decryption and only returns plaintext if they match.
+- Offers access to an SIV implementation that doesn't take a nonce.
 
-## What is wrong with ChaCha20-Poly1305?
-1. ChaCha20-Poly1305 is not key committing, meaning it is possible to decrypt a ciphertext using [multiple keys](https://eprint.iacr.org/2020/1491.pdf). The recommended approach for avoiding this problem (zero padding) has to be manually implemented, is potentially vulnerable to timing attacks, and will slow down decryption.
-2. Poly1305 produces a 128-bit tag, which is rather short. The recommended hash length is typically 256-bit because that offers 128-bit security.
+## Justification
+ChaCha20-Poly1305 and XChaCha20-Poly1305 are not key or message committing, meaning it is possible to decrypt a ciphertext using [multiple keys](https://eprint.iacr.org/2020/1491.pdf), and if an attacker knows the key, then they can find other messages that have the [same tag](https://neilmadden.blog/2021/02/16/when-a-kem-is-not-enough/).
 
-## How does ChaCha20-BLAKE3 solve these problems?
-1. This implementation is key committing because it uses keyed BLAKE3 and both the encryption key and MAC key are derived from the same master key.
-2. This implementation uses a 256-bit tag, which offers improved security guarantees.
+XSalsa20-Poly1305, AES-GCM, AES-GCM-SIV, AES-OCB, and [likely](https://crypto.stackexchange.com/questions/87779/do-ccm-and-eax-provide-key-commitment) AES-EAX have exactly the same problem. Furthermore, [no](https://www.usenix.org/system/files/sec21_slides_len.pdf) committing AEADs have been standardised. Then although [AEGIS](https://eprint.iacr.org/2013/695.pdf), which was a finalist in the [CAESAR competition](https://competitions.cr.yp.to/caesar-submissions.html), is committing and will be [available](https://github.com/jedisct1/libsodium/issues/1028) in the next libsodium release, it has poor performance without AES-NI instruction set support and is likely vulnerable to side-channel attacks, unlike ChaCha20.
 
-## How do I use this?
-1. Install the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core) and [Blake3.NET](https://www.nuget.org/packages/Blake3/) NuGet packages in [Visual Studio](https://docs.microsoft.com/en-us/nuget/quickstart/install-and-use-a-package-in-visual-studio).
+There are various fixes for this problem, but they all have to be manually implemented, increase the size of the ciphertext, slow down encryption/decryption to some extent, certain approaches are vulnerable to timing attacks, and the better solutions I have seen involve the use of a non-polynomial MAC (e.g. HMAC), meaning you may as well switch to Encrypt-then-MAC, which can provide improved security guarantees, unless maximum performance or a small tag size is critical.
+
+ChaCha20-BLAKE3 is about the fastest Encrypt-then-MAC combination possible and is even faster than ChaCha20-Poly1305 for large inputs. Moreover, the longer tag and commitment properties provide additional security, and the SIV implementation offers a [more secure](https://eprint.iacr.org/2019/1492.pdf) alternative to AES-SIV.
+
+## Installation
+1. Install the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core) and [Blake3.NET](https://www.nuget.org/packages/Blake3/) NuGet packages for your project in [Visual Studio](https://docs.microsoft.com/en-us/nuget/quickstart/install-and-use-a-package-in-visual-studio).
 2. Download the latest [release](https://github.com/samuel-lucas6/ChaCha20-BLAKE3/releases).
-3. Move the downloaded DLL file into your Visual Studio project folder.
-3. Click on the ```Project``` tab and ```Add Project Reference...``` in Visual Studio.
-4. Go to ```Browse```, click the ```Browse``` button, and select the downloaded DLL file.
+3. Move the downloaded DLL file into your project folder.
+4. Click on the ```Project``` tab and ```Add Project Reference...``` in Visual Studio.
+5. Go to ```Browse```, click the ```Browse``` button, and select the downloaded DLL file.
+6. Add ```using ChaCha20BLAKE3;``` to the top of each code file that will use the library.
 
 Note that the [libsodium](https://doc.libsodium.org/) library requires the [Visual C++ Redistributable for Visual Studio 2015-2019](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads) to work on Windows. If you want your program to be portable, then you must keep the relevant (x86 or x64) ```vcruntime140.dll``` file in the same folder as your executable on Windows.
 
-### ChaCha20
+## Usage
+### ChaCha20-BLAKE3
 ⚠️**WARNING: Never reuse a nonce with the same key.**
 ```c#
 const string filePath = "C:\\Users\\samuel-lucas6\\Pictures\\test.jpg";
@@ -50,7 +49,7 @@ byte[] nonce = new byte[nonceLength];
 // The key can be random or derived using a KDF (e.g. Argon2, HKDF, etc)
 byte[] key = SodiumCore.GetRandomBytes(keyLength);
 
-// The additional data can be null or version numbers, timestamps, etc
+// The additional data can be null but is ideal for file headers, version numbers, timestamps, etc
 byte[] additionalData = Encoding.UTF8.GetBytes(version);
 
 // Encrypt the message
@@ -60,7 +59,7 @@ byte[] ciphertext = ChaCha20_BLAKE3.Encrypt(message, nonce, key, additionalData)
 byte[] plaintext = ChaCha20_BLAKE3.Decrypt(ciphertext, nonce, key, additionalData);
 ```
 
-### XChaCha20
+### XChaCha20-BLAKE3
 ⚠️**WARNING: Never reuse a nonce with the same key.**
 ```c#
 const string filePath = "C:\\Users\\samuel-lucas6\\Pictures\\test.jpg";
@@ -77,7 +76,7 @@ byte[] nonce = SodiumCore.GetRandomBytes(nonceLength);
 // The key can be random or derived using a KDF (e.g. Argon2, HKDF, etc)
 byte[] key = SodiumCore.GetRandomBytes(keyLength);
 
-// The additional data can be null or version numbers, timestamps, etc
+// The additional data can be null but is ideal for file headers, version numbers, timestamps, etc
 byte[] additionalData = Encoding.UTF8.GetBytes(version);
 
 // Encrypt the message
@@ -87,12 +86,35 @@ byte[] ciphertext = XChaCha20_BLAKE3.Encrypt(message, nonce, key, additionalData
 byte[] plaintext = XChaCha20_BLAKE3.Decrypt(ciphertext, nonce, key, additionalData);
 ```
 
-## How fast is it?
+### XChaCha20-BLAKE3-SIV
+⚠️**WARNING: A new key should be used for each message. Otherwise, you should include unique, random data as part of the additional data to ensure semantic security.**
+```c#
+const string filePath = "C:\\Users\\samuel-lucas6\\Pictures\\test.jpg";
+const int keyLength = 64;
+const int randomAdditionalDataLength = 32;
+
+// The message does not have to be a file
+byte[] message = File.ReadAllBytes(filePath);
+
+// The key can be random or derived using a KDF (e.g. Argon2, HKDF, etc)
+byte[] key = SodiumCore.GetRandomBytes(keyLength);
+
+// The additional data can be null but is ideal for file headers, version numbers, timestamps, etc
+byte[] additionalData = SodiumCore.GetRandomBytes(randomAdditionalDataLength);
+
+// Encrypt the message
+byte[] ciphertext = XChaCha20_BLAKE3_SIV.Encrypt(message, key, additionalData);
+
+// Decrypt the ciphertext
+byte[] plaintext = XChaCha20_BLAKE3_SIV.Decrypt(ciphertext, key, additionalData);
+```
+
+## Benchmarks
 ChaCha20-BLAKE3 is faster than ChaCha20-Poly1305 for large inputs but slightly slower for small-medium sized messages.
 
 The following benchmarks were done using [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet/) in a .NET 5 console application with 16 bytes of additional data.
 
-34.1 MiB JPG file:
+#### 34.1 MiB JPG file
 |                 Function |     Mean |    Error |   StdDev |
 |------------------------- |----------|----------|----------|
 | **ChaCha20-BLAKE3.Encrypt** | **46.93 ms** | **0.791 ms** | **0.701 ms** |
@@ -102,7 +124,7 @@ The following benchmarks were done using [BenchmarkDotNet](https://github.com/do
 | ChaCha20-Poly1305.Encrypt (with padding fix) | 69.26 ms | 0.620 ms | 0.550 ms |
 | ChaCha20-Poly1305.Decrypt (with padding fix) | 69.33 ms | 0.782 ms | 0.732 ms |
 
-16.1 KiB Kryptor file:
+#### 16.1 KiB Kryptor file
 |                 Function |     Mean |    Error |   StdDev |
 |------------------------- |----------|----------|----------|
 | **ChaCha20-BLAKE3.Encrypt** | **21.74 us** | **0.043 us** | **0.038 us** |
@@ -112,7 +134,7 @@ The following benchmarks were done using [BenchmarkDotNet](https://github.com/do
 | ChaCha20-Poly1305.Encrypt (with padding fix) | 18.23 us | 0.034 us | 0.029 us |
 | ChaCha20-Poly1305.Decrypt (with padding fix) | 18.46 us | 0.030 us | 0.024 us |
 
-128 byte text file:
+#### 128 byte text file
 |                 Function |     Mean |    Error |   StdDev |
 |------------------------- |----------|----------|----------|
 | **ChaCha20-BLAKE3.Encrypt** | **1.109 us** | **0.0038 us** | **0.0032 us** |
