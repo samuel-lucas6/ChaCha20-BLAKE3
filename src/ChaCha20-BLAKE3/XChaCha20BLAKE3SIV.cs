@@ -32,11 +32,12 @@ namespace ChaCha20BLAKE3
         /// <param name="message">The message to encrypt.</param>
         /// <param name="key">The 64 byte key.</param>
         /// <param name="additionalData">Optional additional data to authenticate.</param>
+        /// <remarks>Use a new key for each message.</remarks>
         /// <returns>The ciphertext and tag.</returns>
         public static byte[] Encrypt(byte[] message, byte[] key, byte[] additionalData = null)
         {
             ParameterValidation.Message(message);
-            ParameterValidation.Key(key, Constants.KeyLength * 2);
+            ParameterValidation.Key(key, Constants.SIVKeyLength);
             additionalData = ParameterValidation.AdditionalData(additionalData);
             (byte[] macKey, byte[] encryptionKey) = KeyDerivation.DeriveKeysSIV(key);
             byte[] tagMessage = Arrays.Concat(additionalData, message, BitConversion.GetBytes(additionalData.Length), BitConversion.GetBytes(message.Length));
@@ -54,7 +55,7 @@ namespace ChaCha20BLAKE3
         public static byte[] Decrypt(byte[] ciphertext, byte[] key, byte[] additionalData = null)
         {
             ParameterValidation.Ciphertext(ciphertext);
-            ParameterValidation.Key(key, Constants.KeyLength * 2);
+            ParameterValidation.Key(key, Constants.SIVKeyLength);
             additionalData = ParameterValidation.AdditionalData(additionalData);
             (byte[] macKey, byte[] encryptionKey) = KeyDerivation.DeriveKeysSIV(key);
             byte[] tag = Tag.Read(ciphertext);

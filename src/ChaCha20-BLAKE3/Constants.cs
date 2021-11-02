@@ -28,6 +28,7 @@ namespace ChaCha20BLAKE3
     internal static class Constants
     {
         internal const int KeyLength = 32;
+        internal const int SIVKeyLength = 64;
         internal const int ChaChaNonceLength = 8;
         internal const int XChaChaNonceLength = 24;
         internal const int TagLength = 32;

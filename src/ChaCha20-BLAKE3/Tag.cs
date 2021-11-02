@@ -33,7 +33,7 @@ namespace ChaCha20BLAKE3
             using var blake3 = Hasher.NewKeyed(macKey);
             blake3.UpdateWithJoin(message);
             var tag = blake3.Finalize();
-            return tag.AsSpan().ToArray();
+            return tag.AsSpanUnsafe().ToArray();
         }
 
         internal static byte[] Read(byte[] ciphertext)

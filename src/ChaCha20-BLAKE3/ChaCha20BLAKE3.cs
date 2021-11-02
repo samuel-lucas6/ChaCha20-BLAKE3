@@ -41,7 +41,7 @@ namespace ChaCha20BLAKE3
             ParameterValidation.Nonce(nonce, Constants.ChaChaNonceLength);
             ParameterValidation.Key(key, Constants.KeyLength);
             additionalData = ParameterValidation.AdditionalData(additionalData);
-            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(nonce, key);
+            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, nonce);
             byte[] ciphertext = StreamEncryption.EncryptChaCha20(message, nonce, encryptionKey);
             byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConversion.GetBytes(additionalData.Length), BitConversion.GetBytes(ciphertext.Length));
             byte[] tag = Tag.Compute(tagMessage, macKey);
@@ -60,7 +60,7 @@ namespace ChaCha20BLAKE3
             ParameterValidation.Nonce(nonce, Constants.ChaChaNonceLength);
             ParameterValidation.Key(key, Constants.KeyLength);
             additionalData = ParameterValidation.AdditionalData(additionalData);
-            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(nonce, key);
+            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, nonce);
             byte[] tag = Tag.Read(ciphertext);
             ciphertext = Tag.Remove(ciphertext);
             byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConversion.GetBytes(additionalData.Length), BitConversion.GetBytes(ciphertext.Length));

@@ -28,10 +28,10 @@ namespace ChaCha20BLAKE3
 {
     internal static class KeyDerivation
     {
-        internal static (byte[] encryptionKey, byte[] macKey) DeriveKeys(byte[] nonce, byte[] inputKeyingMaterial)
+        internal static (byte[] encryptionKey, byte[] macKey) DeriveKeys(byte[] inputKeyingMaterial, byte[] nonce)
         {
             byte[] encryptionKey = DeriveKey(inputKeyingMaterial, Constants.EncryptionContext);
-            byte[] macKey = DeriveKey(Arrays.Concat(nonce, inputKeyingMaterial), Constants.AuthenticationContext);
+            byte[] macKey = DeriveKey(Arrays.Concat(inputKeyingMaterial, nonce), Constants.AuthenticationContext);
             return (encryptionKey, macKey);
         }
 
@@ -40,7 +40,7 @@ namespace ChaCha20BLAKE3
             using var blake3 = Hasher.NewDeriveKey(context);
             blake3.Update(inputKeyingMaterial);
             var key = blake3.Finalize();
-            return key.AsSpan().ToArray();
+            return key.AsSpanUnsafe().ToArray();
         }
 
         internal static (byte[] macKey, byte[] encryptionKey) DeriveKeysSIV(byte[] inputKeyingMaterial)
