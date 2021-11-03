@@ -19,7 +19,7 @@ XSalsa20-Poly1305, AES-GCM, AES-GCM-SIV, AES-OCB, and [likely](https://crypto.st
 
 There are various fixes for this problem, but they all have to be manually implemented, increase the size of the ciphertext, slow down encryption/decryption to some extent, certain approaches are vulnerable to timing attacks, and the better solutions I have seen involve the use of a non-polynomial MAC (e.g. HMAC), meaning you may as well switch to Encrypt-then-MAC, which can provide improved security guarantees, unless maximum performance or a small tag size is critical.
 
-ChaCha20-BLAKE3 is about the fastest Encrypt-then-MAC combination possible and is even faster than ChaCha20-Poly1305 for large inputs. Moreover, the longer tag and commitment properties provide additional security, and the SIV implementation offers a [more secure](https://eprint.iacr.org/2019/1492.pdf) alternative to AES-SIV.
+ChaCha20-BLAKE3 is about the fastest Encrypt-then-MAC combination possible and is even faster than ChaCha20-Poly1305 for large inputs. Moreover, the commitment properties provide additional security, and the SIV implementation offers a [more secure](https://eprint.iacr.org/2019/1492.pdf) alternative to AES-SIV.
 
 ## Installation
 1. Install the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core) and [Blake3.NET](https://www.nuget.org/packages/Blake3/) NuGet packages for your project in [Visual Studio](https://docs.microsoft.com/en-us/nuget/quickstart/install-and-use-a-package-in-visual-studio).
@@ -87,7 +87,7 @@ byte[] plaintext = XChaCha20_BLAKE3.Decrypt(ciphertext, nonce, key, additionalDa
 ```
 
 ### XChaCha20-BLAKE3-SIV
-⚠️**WARNING: A new key should be used for each message. Otherwise, you should include unique, random data as part of the additional data to ensure semantic security.**
+⚠️**WARNING: A new key should be used for each message. Otherwise, you should include at least 16 bytes of unique, random data as part of the additional data to ensure semantic security.**
 ```c#
 const string filePath = "C:\\Users\\samuel-lucas6\\Pictures\\test.jpg";
 const int keyLength = 64;
