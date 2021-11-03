@@ -18,6 +18,17 @@
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
     <FileVersion>2.0.0.0</FileVersion>
     <AnalysisLevel>latest</AnalysisLevel>
+    <ErrorReport>none</ErrorReport>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>libsodium;cryptography;crypto;encryption;authenticated-encryption;aead;Encrypt-then-MAC;ChaCha20;XChaCha20;BLAKE3;SIV;ChaCha20-BLAKE3;XChaCha20-BLAKE3;XChaCha20-BLAKE3-SIV</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
