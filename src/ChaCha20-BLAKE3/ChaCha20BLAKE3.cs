@@ -2,7 +2,7 @@
 using Sodium;
 
 /*
-    ChaCha20-BLAKE3: Committing ChaCha20-BLAKE3, XChaCha20-BLAKE3, and XChaCha20-BLAKE3-SIV implementations.
+    ChaCha20-BLAKE3: Committing ChaCha20-BLAKE3, XChaCha20-BLAKE3, and XChaCha20-BLAKE3-SIV AEAD implementations.
     Copyright (c) 2021 Samuel Lucas
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -26,15 +26,8 @@ using Sodium;
 
 namespace ChaCha20BLAKE3
 {
-    public static class ChaCha20_BLAKE3
+    public static class ChaCha20BLAKE3
     {
-        /// <summary>Encrypts a message using ChaCha20-BLAKE3.</summary>
-        /// <param name="message">The message to encrypt.</param>
-        /// <param name="nonce">The 8 byte nonce.</param>
-        /// <param name="key">The 32 byte key.</param>
-        /// <param name="additionalData">Optional additional data to authenticate.</param>
-        /// <remarks>Never reuse a nonce with the same key. A counter nonce is strongly recommended.</remarks>
-        /// <returns>The ciphertext and tag.</returns>
         public static byte[] Encrypt(byte[] message, byte[] nonce, byte[] key, byte[] additionalData = null)
         {
             ParameterValidation.Message(message);
@@ -48,12 +41,6 @@ namespace ChaCha20BLAKE3
             return Arrays.Concat(ciphertext, tag);
         }
 
-        /// <summary>Decrypts a ciphertext message using ChaCha20-BLAKE3.</summary>
-        /// <param name="ciphertext">The ciphertext to decrypt.</param>
-        /// <param name="nonce">The 8 byte nonce.</param>
-        /// <param name="key">The 32 byte key.</param>
-        /// <param name="additionalData">Optional additional data to authenticate.</param>
-        /// <returns>The decrypted message.</returns>
         public static byte[] Decrypt(byte[] ciphertext, byte[] nonce, byte[] key, byte[] additionalData = null)
         {
             ParameterValidation.Ciphertext(ciphertext);

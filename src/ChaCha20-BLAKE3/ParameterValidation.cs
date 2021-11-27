@@ -1,7 +1,7 @@
 ﻿using System;
 
 /*
-    ChaCha20-BLAKE3: Committing ChaCha20-BLAKE3, XChaCha20-BLAKE3, and XChaCha20-BLAKE3-SIV implementations.
+    ChaCha20-BLAKE3: Committing ChaCha20-BLAKE3, XChaCha20-BLAKE3, and XChaCha20-BLAKE3-SIV AEAD implementations.
     Copyright (c) 2021 Samuel Lucas
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
