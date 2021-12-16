@@ -28,28 +28,21 @@ namespace ChaCha20BLAKE3
 {
     internal static class KeyDerivation
     {
-        internal static (byte[] encryptionKey, byte[] macKey) DeriveKeys(byte[] inputKeyingMaterial, byte[] nonce)
+        internal static (byte[] encryptionKey, byte[] macKey) DeriveKeys(byte[] inputKeyingMaterial, byte[] nonce, byte[] encryptionContext, byte[] authenticationContext)
         {
-            byte[] encryptionKey = DeriveKey(inputKeyingMaterial, Constants.EncryptionContext);
-            byte[] macKey = DeriveKey(Arrays.Concat(inputKeyingMaterial, nonce), Constants.AuthenticationContext);
+            byte[] encryptionKey = DeriveKey(inputKeyingMaterial, encryptionContext);
+            byte[] macKey = DeriveKey(inputKeyingMaterial, authenticationContext, nonce);
             return (encryptionKey, macKey);
         }
 
-        private static byte[] DeriveKey(byte[] inputKeyingMaterial, byte[] context)
+        private static byte[] DeriveKey(byte[] inputKeyingMaterial, byte[] context, byte[] salt = null)
         {
+            salt ??= Array.Empty<byte>();
             using var blake3 = Hasher.NewDeriveKey(context);
+            blake3.Update(salt);
             blake3.Update(inputKeyingMaterial);
             var key = blake3.Finalize();
             return key.AsSpanUnsafe().ToArray();
-        }
-
-        internal static (byte[] macKey, byte[] encryptionKey) DeriveKeysSIV(byte[] inputKeyingMaterial)
-        {
-            var macKey = new byte[Constants.KeyLength];
-            Array.Copy(inputKeyingMaterial, macKey, macKey.Length);
-            var encryptionKey = new byte[Constants.KeyLength];
-            Array.Copy(inputKeyingMaterial, sourceIndex: macKey.Length, encryptionKey, destinationIndex: 0, encryptionKey.Length);
-            return (macKey, encryptionKey);
         }
     }
 }

@@ -25,7 +25,7 @@
 
 namespace ChaCha20BLAKE3
 {
-    internal class BitConversion
+    internal static class BitConversion
     {
         public static byte[] GetBytes(int value)
         {

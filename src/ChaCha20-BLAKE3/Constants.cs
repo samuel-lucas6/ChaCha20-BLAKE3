@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-/*
+﻿/*
     ChaCha20-BLAKE3: Committing ChaCha20-BLAKE3, XChaCha20-BLAKE3, and XChaCha20-BLAKE3-SIV AEAD implementations.
     Copyright (c) 2021 Samuel Lucas
 
@@ -27,12 +25,9 @@ namespace ChaCha20BLAKE3
 {
     internal static class Constants
     {
-        internal const int KeyLength = 32;
-        internal const int SIVKeyLength = 64;
-        internal const int ChaChaNonceLength = 8;
-        internal const int XChaChaNonceLength = 24;
-        internal const int TagLength = 32;
-        internal static readonly byte[] EncryptionContext = Encoding.UTF8.GetBytes("ChaCha20-BLAKE3 13/03/2021 14:09:00 ChaCha20.Encrypt");
-        internal static readonly byte[] AuthenticationContext = Encoding.UTF8.GetBytes("ChaCha20-BLAKE3 13/03/2021 14:09:15 BLAKE3.KeyedHash");
+        internal const int KeySize = 32;
+        internal const int ChaChaNonceSize = 8;
+        internal const int XChaChaNonceSize = 24;
+        internal const int TagSize = 32;
     }
 }
