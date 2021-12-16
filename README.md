@@ -6,20 +6,20 @@ Committing ChaCha20-BLAKE3, XChaCha20-BLAKE3, and XChaCha20-BLAKE3-SIV AEAD impl
 
 ## Features
 This library does several things for you:
-- Derives a 256-bit encryption key and 256-bit MAC key based on the (master) key.
+- Derives a 256-bit encryption key and 256-bit MAC key based on the key and nonce.
 - Supports additional data in the calculation of the authentication tag, unlike most Encrypt-then-MAC implementations.
 - Appends the authentication tag to the ciphertext.
 - Compares the authentication tags in constant time during decryption and only returns plaintext if they match.
 - Offers access to an SIV implementation that does not take a nonce.
 
 ## Justification
-ChaCha20-Poly1305 and XChaCha20-Poly1305 are not key or message committing, meaning it is possible to decrypt a ciphertext using [multiple keys](https://eprint.iacr.org/2020/1491.pdf), and if an attacker knows the key, then they can find other messages that have the [same tag](https://neilmadden.blog/2021/02/16/when-a-kem-is-not-enough/).
+The popular AEADs in use today, such as (X)ChaCha20-Poly1305, AES-GCM, AES-GCM-SIV, XSalsa20-Poly1305, AES-OCB, and so on, are not key or message committing. This means it is possible to decrypt a ciphertext using [multiple keys](https://youtu.be/3M1jIO-jLHI) without an authentication error, which can lead to [partitioning oracle attacks](https://eprint.iacr.org/2020/1491.pdf) and [deanonymisation](https://github.com/LoupVaillant/Monocypher/issues/218#issuecomment-886997371) in certain online scenarios. Furthermore, if an attacker knows the key, then they can find other messages that have the [same tag](https://neilmadden.blog/2021/02/16/when-a-kem-is-not-enough/).
 
-XSalsa20-Poly1305, AES-GCM, AES-GCM-SIV, AES-OCB, and [likely](https://crypto.stackexchange.com/questions/87779/do-ccm-and-eax-provide-key-commitment) AES-EAX have exactly the same problem. Furthermore, [no](https://www.usenix.org/system/files/sec21_slides_len.pdf) committing AEADs have been standardised. Then although [AEGIS](https://eprint.iacr.org/2013/695.pdf), which was a finalist in the [CAESAR competition](https://competitions.cr.yp.to/caesar-submissions.html), is committing and will be [available](https://github.com/jedisct1/libsodium/issues/1028) in the next libsodium release, it has [poor](https://github.com/jedisct1/libsodium/issues/951#issuecomment-620561064) performance without AES-NI instruction set support and [can](https://jedisct1.github.io/draft-aegis-aead/draft-denis-aegis-aead.html#name-security-considerations) be vulnerable to side-channel attacks, unlike ChaCha20.
+This library was created because there are currently no standardised committing AEAD schemes, adding the commitment property to a non-committing AEAD requires using a MAC, and Encrypt-then-MAC offers improved security guarantees.
 
-There are various fixes for this problem, but they all have to be manually implemented, increase the size of the ciphertext, slow down encryption/decryption to some extent, certain approaches are vulnerable to timing attacks, and the better solutions I have seen involve the use of a non-polynomial MAC (e.g. HMAC), meaning you may as well switch to Encrypt-then-MAC, which can provide improved security guarantees, unless maximum performance or a small tag size is critical.
-
-ChaCha20-BLAKE3 is about the fastest Encrypt-then-MAC combination possible and is even faster than ChaCha20-Poly1305 for large inputs. Moreover, the commitment properties provide additional security, and the SIV implementation offers a [more secure](https://eprint.iacr.org/2019/1492.pdf) alternative to AES-SIV.
+Finally, (X)ChaCha20-BLAKE3 is a good combination for an Encrypt-then-MAC scheme because:
+1. ChaCha20 has a [higher security margin](https://eprint.iacr.org/2019/1492.pdf) than AES, performs well on older devices, and runs in [constant time](https://cr.yp.to/chacha/chacha-20080128.pdf), [unlike](https://cr.yp.to/antiforgery/cachetiming-20050414.pdf) AES.
+2. BLAKE3 is [fast](https://github.com/BLAKE3-team/BLAKE3-specs/blob/master/blake3.pdf) and evolved from BLAKE, which received a [significant amount of cryptanalysis](https://nvlpubs.nist.gov/nistpubs/ir/2012/NIST.IR.7896.pdf), even more than Keccak (the SHA3 finalist), as part of the [SHA3 competition](https://competitions.cr.yp.to/sha3.html).
 
 ## Installation
 1. Install the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core) and [Blake3.NET](https://www.nuget.org/packages/Blake3/) NuGet packages for your project in [Visual Studio](https://docs.microsoft.com/en-us/nuget/quickstart/install-and-use-a-package-in-visual-studio).
@@ -87,7 +87,7 @@ byte[] plaintext = XChaCha20_BLAKE3.Decrypt(ciphertext, nonce, key, additionalDa
 ```
 
 ### XChaCha20-BLAKE3-SIV
-⚠️**WARNING: A new key should be used for each message. Otherwise, you should include at least 16 bytes of unique, random data as part of the additional data to ensure semantic security.**
+⚠️**WARNING: Never reuse a key. As a precaution, you can use at least 16 bytes of unique, random data as part of the additional data to act as a nonce.**
 ```c#
 const string filePath = "C:\\Users\\samuel-lucas6\\Pictures\\test.jpg";
 const int keyLength = 64;
