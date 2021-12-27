@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Linq;
 
 /*
     ChaCha20-BLAKE3: Committing ChaCha20-BLAKE3, XChaCha20-BLAKE3, and XChaCha20-BLAKE3-SIV AEAD implementations.
-    Copyright (c) 2021 Samuel Lucas
+    Copyright (c) 2021-2022 Samuel Lucas
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
     this software and associated documentation files (the "Software"), to deal in
@@ -27,24 +28,16 @@ namespace ChaCha20BLAKE3
 {
     internal static class Arrays
     {
-        private const int ZeroIndex = 0;
-
-        internal static byte[] Concat(byte[] a, byte[] b)
+        internal static T[] Concat<T>(params T[][] arrays)
         {
-            var concat = new byte[a.Length + b.Length];
-            Array.Copy(a, ZeroIndex, concat, ZeroIndex, a.Length);
-            Array.Copy(b, ZeroIndex, concat, a.Length, b.Length);
-            return concat;
-        }
-
-        internal static byte[] Concat(byte[] a, byte[] b, byte[] c, byte[] d)
-        {
-            var concat = new byte[a.Length + b.Length + c.Length + d.Length];
-            Array.Copy(a, ZeroIndex, concat, ZeroIndex, a.Length);
-            Array.Copy(b, ZeroIndex, concat, a.Length, b.Length);
-            Array.Copy(c, ZeroIndex, concat, a.Length + b.Length, c.Length);
-            Array.Copy(d, ZeroIndex, concat, a.Length + b.Length + c.Length, d.Length);
-            return concat;
+            int offset = 0;
+            var result = new T[arrays.Sum(array => array.Length)];
+            foreach (var array in arrays)
+            {
+                Array.Copy(array, sourceIndex: 0, result, offset, array.Length);
+                offset += array.Length;
+            }
+            return result;
         }
     }
 }

@@ -6,7 +6,7 @@
     <AssemblyName>ChaCha20BLAKE3</AssemblyName>
     <Description>Committing ChaCha20-BLAKE3, XChaCha20-BLAKE3, and XChaCha20-BLAKE3-SIV implementations.</Description>
     <Authors>Samuel Lucas</Authors>
-    <Copyright>Copyright (c) 2021 Samuel Lucas</Copyright>
+    <Copyright>Copyright (c) 2021-2022 Samuel Lucas</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/samuel-lucas6/ChaCha20-BLAKE3</PackageProjectUrl>
     <RepositoryUrl>https://github.com/samuel-lucas6/ChaCha20-BLAKE3</RepositoryUrl>
@@ -32,7 +32,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blake3" Version="0.4.0" />
+    <PackageReference Include="Blake3" Version="0.5.1" />
     <PackageReference Include="Sodium.Core" Version="1.2.3" />
   </ItemGroup>
 

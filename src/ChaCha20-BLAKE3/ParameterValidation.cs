@@ -2,7 +2,7 @@
 
 /*
     ChaCha20-BLAKE3: Committing ChaCha20-BLAKE3, XChaCha20-BLAKE3, and XChaCha20-BLAKE3-SIV AEAD implementations.
-    Copyright (c) 2021 Samuel Lucas
+    Copyright (c) 2021-2022 Samuel Lucas
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of
     this software and associated documentation files (the "Software"), to deal in
@@ -27,6 +27,8 @@ namespace ChaCha20BLAKE3
 {
     internal static class ParameterValidation
     {
+        internal static byte[] AdditionalData(byte[] additionalData) => additionalData ?? Array.Empty<byte>();
+
         internal static void Message(byte[] message)
         {
             if (message == null)
@@ -73,11 +75,6 @@ namespace ChaCha20BLAKE3
             {
                 throw new ArgumentOutOfRangeException(nameof(key), key.Length, $"The key must be {validKeyLength} bytes in length.");
             }
-        }
-
-        internal static byte[] AdditionalData(byte[] additionalData)
-        {
-            return additionalData ?? Array.Empty<byte>();
         }
     }
 }
