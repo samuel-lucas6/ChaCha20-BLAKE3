@@ -44,7 +44,7 @@ byte[] message = File.ReadAllBytes(filePath);
 // The nonce should be a counter that gets incremented for each message encrypted using the same key
 byte[] nonce = new byte[ChaCha20BLAKE3.NonceSize];
 
-// The key can be random or derived using a KDF (e.g. Argon2, HKDF, etc)
+// The key can be randomly generated using a CSPRNG or derived using a KDF (e.g. Argon2, HKDF, etc)
 byte[] key = SodiumCore.GetRandomBytes(ChaCha20BLAKE3.KeySize);
 
 // The additional data can be null but is ideal for file headers, version numbers, timestamps, etc
@@ -66,10 +66,11 @@ const string version = "application v1.0.0";
 // The message does not have to be a file
 byte[] message = File.ReadAllBytes(filePath);
 
-// The nonce can be random. Increment or randomly generate the nonce for each message encrypted using the same key
+// The nonce can be a counter or randomly generated using a CSPRNG
+// Increment or randomly generate the nonce for each message encrypted using the same key
 byte[] nonce = SodiumCore.GetRandomBytes(XChaCha20BLAKE3.NonceSize);
 
-// The key can be random or derived using a KDF (e.g. Argon2, HKDF, etc)
+// The key can be randomly generated using a CSPRNG or derived using a KDF (e.g. Argon2, HKDF, etc)
 byte[] key = SodiumCore.GetRandomBytes(XChaCha20BLAKE3.KeySize);
 
 // The additional data can be null but is ideal for file headers, version numbers, timestamps, etc
@@ -90,10 +91,10 @@ const string filePath = "C:\\Users\\samuel-lucas6\\Pictures\\test.jpg";
 // The message does not have to be a file
 byte[] message = File.ReadAllBytes(filePath);
 
-// The key can be random or derived using a KDF (e.g. Argon2, HKDF, etc)
+// The key can be randomly generated using a CSPRNG or derived using a KDF (e.g. Argon2, HKDF, etc)
 byte[] key = SodiumCore.GetRandomBytes(XChaCha20BLAKE3SIV.KeySize);
 
-// The additional data can be null but is ideal for file headers, version numbers, timestamps, etc
+// The additional data can be null, used as a nonce, and/or used for file headers, version numbers, timestamps, etc
 byte[] additionalData = SodiumCore.GetRandomBytes(XChaCha20BLAKE3SIV.KeySize / 2);
 
 // Encrypt the message
