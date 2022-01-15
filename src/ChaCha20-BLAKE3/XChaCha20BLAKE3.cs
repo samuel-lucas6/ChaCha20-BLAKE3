@@ -25,7 +25,7 @@ using Sodium;
     SOFTWARE.
 */
 
-namespace ChaCha20BLAKE3
+namespace ChaCha20Blake3
 {
     public static class XChaCha20BLAKE3
     {
@@ -41,7 +41,7 @@ namespace ChaCha20BLAKE3
             ParameterValidation.Nonce(nonce, NonceSize);
             ParameterValidation.Key(key, KeySize);
             additionalData = ParameterValidation.AdditionalData(additionalData);
-            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, nonce, EncryptionContext, AuthenticationContext);
+            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, EncryptionContext, AuthenticationContext, nonce);
             byte[] ciphertext = StreamEncryption.EncryptXChaCha20(message, nonce, encryptionKey);
             byte[] tag = Tag.Compute(additionalData, ciphertext, macKey);
             return Arrays.Concat(ciphertext, tag);
@@ -53,12 +53,11 @@ namespace ChaCha20BLAKE3
             ParameterValidation.Nonce(nonce, NonceSize);
             ParameterValidation.Key(key, KeySize);
             additionalData = ParameterValidation.AdditionalData(additionalData);
-            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, nonce, EncryptionContext, AuthenticationContext);
-            byte[] tag = Tag.Read(ciphertext);
-            ciphertext = Tag.Remove(ciphertext);
-            byte[] computedTag = Tag.Compute(additionalData, ciphertext, macKey);
+            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, EncryptionContext, AuthenticationContext, nonce);
+            byte[] tag = Tag.Read(ciphertext, out byte[] ciphertextWithoutTag);
+            byte[] computedTag = Tag.Compute(additionalData, ciphertextWithoutTag, macKey);
             bool validTag = Utilities.Compare(tag, computedTag);
-            return !validTag ? throw new CryptographicException() : StreamEncryption.DecryptXChaCha20(ciphertext, nonce, encryptionKey);
+            return !validTag ? throw new CryptographicException() : StreamEncryption.DecryptXChaCha20(ciphertextWithoutTag, nonce, encryptionKey);
         }
     }
 }

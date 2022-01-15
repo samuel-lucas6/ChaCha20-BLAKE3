@@ -23,7 +23,7 @@
     SOFTWARE.
 */
 
-namespace ChaCha20BLAKE3
+namespace ChaCha20Blake3
 {
     internal static class ParameterValidation
     {
@@ -31,50 +31,26 @@ namespace ChaCha20BLAKE3
 
         internal static void Message(byte[] message)
         {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message), "The message cannot be null.");
-            }
-            if (message.Length == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(message), message.Length, $"The message must be at least 1 byte in length.");
-            }
+            if (message == null) { throw new ArgumentNullException(nameof(message), "The message cannot be null."); }
+            if (message.Length == 0) { throw new ArgumentOutOfRangeException(nameof(message), $"The message cannot be empty."); }
         }
 
         internal static void Ciphertext(byte[] ciphertext)
         {
-            if (ciphertext == null)
-            {
-                throw new ArgumentNullException(nameof(ciphertext), "The ciphertext cannot be null.");
-            }
-            if (ciphertext.Length <= Constants.TagSize)
-            {
-                throw new ArgumentOutOfRangeException(nameof(ciphertext), ciphertext.Length, $"The ciphertext must be at least {Constants.TagSize + 1} bytes in length.");
-            }
+            if (ciphertext == null) { throw new ArgumentNullException(nameof(ciphertext), "The ciphertext cannot be null."); }
+            if (ciphertext.Length <= Constants.TagSize) { throw new ArgumentOutOfRangeException(nameof(ciphertext), ciphertext.Length, $"The ciphertext must be at least {Constants.TagSize + 1} bytes in length."); }
         }
 
         internal static void Nonce(byte[] nonce, int validNonceLength)
         {
-            if (nonce == null)
-            {
-                throw new ArgumentNullException(nameof(nonce), "The nonce cannot be null.");
-            }
-            if (nonce.Length != validNonceLength)
-            {
-                throw new ArgumentOutOfRangeException(nameof(nonce), nonce.Length, $"The nonce must be {validNonceLength} bytes in length.");
-            }
+            if (nonce == null) { throw new ArgumentNullException(nameof(nonce), "The nonce cannot be null."); }
+            if (nonce.Length != validNonceLength) { throw new ArgumentOutOfRangeException(nameof(nonce), nonce.Length, $"The nonce must be {validNonceLength} bytes in length."); }
         }
 
         internal static void Key(byte[] key, int validKeyLength)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key), "The key cannot be null.");
-            }
-            if (key.Length != validKeyLength)
-            {
-                throw new ArgumentOutOfRangeException(nameof(key), key.Length, $"The key must be {validKeyLength} bytes in length.");
-            }
+            if (key == null) { throw new ArgumentNullException(nameof(key), "The key cannot be null."); }
+            if (key.Length != validKeyLength) { throw new ArgumentOutOfRangeException(nameof(key), key.Length, $"The key must be {validKeyLength} bytes in length."); }
         }
     }
 }

@@ -25,7 +25,7 @@ using Sodium;
     SOFTWARE.
 */
 
-namespace ChaCha20BLAKE3
+namespace ChaCha20Blake3
 {
     public static class XChaCha20BLAKE3SIV
     {
@@ -39,7 +39,7 @@ namespace ChaCha20BLAKE3
             ParameterValidation.Message(message);
             ParameterValidation.Key(key, KeySize);
             additionalData = ParameterValidation.AdditionalData(additionalData);
-            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, nonce: null, EncryptionContext, AuthenticationContext);
+            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, EncryptionContext, AuthenticationContext);
             byte[] tag = Tag.Compute(additionalData, message, macKey);
             byte[] nonce = Tag.GetNonce(tag);
             byte[] ciphertext = StreamEncryption.EncryptXChaCha20(message, nonce, encryptionKey);
@@ -51,11 +51,10 @@ namespace ChaCha20BLAKE3
             ParameterValidation.Ciphertext(ciphertext);
             ParameterValidation.Key(key, KeySize);
             additionalData = ParameterValidation.AdditionalData(additionalData);
-            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, nonce: null, EncryptionContext, AuthenticationContext);
-            byte[] tag = Tag.Read(ciphertext);
-            ciphertext = Tag.Remove(ciphertext);
+            (byte[] encryptionKey, byte[] macKey) = KeyDerivation.DeriveKeys(key, EncryptionContext, AuthenticationContext);
+            byte[] tag = Tag.Read(ciphertext, out byte[] ciphertextWithoutTag);
             byte[] nonce = Tag.GetNonce(tag);
-            byte[] message = StreamEncryption.DecryptXChaCha20(ciphertext, nonce, encryptionKey);
+            byte[] message = StreamEncryption.DecryptXChaCha20(ciphertextWithoutTag, nonce, encryptionKey);
             byte[] computedTag = Tag.Compute(additionalData, message, macKey);
             bool validTag = Utilities.Compare(tag, computedTag);
             if (validTag) { return message; }

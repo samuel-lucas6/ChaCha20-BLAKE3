@@ -24,11 +24,11 @@ using Blake3;
     SOFTWARE.
 */
 
-namespace ChaCha20BLAKE3
+namespace ChaCha20Blake3
 {
     internal static class KeyDerivation
     {
-        internal static (byte[] encryptionKey, byte[] macKey) DeriveKeys(byte[] inputKeyingMaterial, byte[] nonce, byte[] encryptionContext, byte[] authenticationContext)
+        internal static (byte[] encryptionKey, byte[] macKey) DeriveKeys(byte[] inputKeyingMaterial, byte[] encryptionContext, byte[] authenticationContext, byte[] nonce = null)
         {
             byte[] encryptionKey = DeriveKey(inputKeyingMaterial, encryptionContext);
             byte[] macKey = DeriveKey(inputKeyingMaterial, authenticationContext, nonce);
@@ -41,6 +41,8 @@ namespace ChaCha20BLAKE3
             using var blake3 = Hasher.NewDeriveKey(context);
             blake3.Update(salt);
             blake3.Update(inputKeyingMaterial);
+            blake3.Update(BitConversion.GetBytes(salt.Length));
+            blake3.Update(BitConversion.GetBytes(inputKeyingMaterial.Length));
             var key = blake3.Finalize();
             return key.AsSpanUnsafe().ToArray();
         }

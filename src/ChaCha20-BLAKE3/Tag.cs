@@ -24,27 +24,28 @@ using Blake3;
     SOFTWARE.
 */
 
-namespace ChaCha20BLAKE3
+namespace ChaCha20Blake3
 {
     internal static class Tag
     {
         internal static byte[] Compute(byte[] additionalData, byte[] ciphertext, byte[] macKey)
         {
-            byte[] tagMessage = Arrays.Concat(additionalData, ciphertext, BitConversion.GetBytes(additionalData.Length), BitConversion.GetBytes(ciphertext.Length));
+            var message = Arrays.Concat(additionalData, ciphertext, BitConversion.GetBytes(additionalData.Length), BitConversion.GetBytes(ciphertext.Length));
             using var blake3 = Hasher.NewKeyed(macKey);
-            blake3.UpdateWithJoin(tagMessage);
+            blake3.UpdateWithJoin(message);
             var tag = blake3.Finalize();
             return tag.AsSpanUnsafe().ToArray();
         }
 
-        internal static byte[] Read(byte[] ciphertext)
+        internal static byte[] Read(byte[] ciphertext, out byte[] ciphertextWithoutTag)
         {
             var tag = new byte[Constants.TagSize];
             Array.Copy(ciphertext, ciphertext.Length - tag.Length, tag, destinationIndex: 0, tag.Length);
+            ciphertextWithoutTag = Remove(ciphertext);
             return tag;
         }
 
-        internal static byte[] Remove(byte[] ciphertextWithTag)
+        private static byte[] Remove(byte[] ciphertextWithTag)
         {
             var ciphertext = new byte[ciphertextWithTag.Length - Constants.TagSize];
             Array.Copy(ciphertextWithTag, sourceIndex: 0, ciphertext, destinationIndex: 0, ciphertext.Length);

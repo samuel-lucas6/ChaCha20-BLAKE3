@@ -23,7 +23,7 @@
     SOFTWARE.
 */
 
-namespace ChaCha20BLAKE3
+namespace ChaCha20Blake3
 {
     internal static class BitConversion
     {

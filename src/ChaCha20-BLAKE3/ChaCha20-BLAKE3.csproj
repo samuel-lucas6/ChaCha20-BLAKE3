@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <RootNamespace>ChaCha20BLAKE3</RootNamespace>
+    <RootNamespace>ChaCha20Blake3</RootNamespace>
     <AssemblyName>ChaCha20BLAKE3</AssemblyName>
     <Description>Committing ChaCha20-BLAKE3, XChaCha20-BLAKE3, and XChaCha20-BLAKE3-SIV implementations.</Description>
     <Authors>Samuel Lucas</Authors>
