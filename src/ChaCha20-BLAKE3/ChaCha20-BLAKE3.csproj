@@ -20,7 +20,7 @@
     <AnalysisLevel>latest</AnalysisLevel>
     <ErrorReport>none</ErrorReport>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>libsodium;cryptography;crypto;encryption;authenticated-encryption;aead;Encrypt-then-MAC;ChaCha20;XChaCha20;BLAKE3;SIV;ChaCha20-BLAKE3;XChaCha20-BLAKE3;XChaCha20-BLAKE3-SIV</PackageTags>
+    <PackageTags>libsodium cryptography crypto encryption authenticated-encryption aead Encrypt-then-MAC ChaCha20-BLAKE3 XChaCha20-BLAKE3 XChaCha20-BLAKE3-SIV ChaCha20 XChaCha20 BLAKE3 SIV</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
