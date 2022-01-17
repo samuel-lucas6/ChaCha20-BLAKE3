@@ -33,7 +33,8 @@ You can find the NuGet package [here](https://www.nuget.org/packages/ChaCha20BLA
 5. Go to `Browse`, click the `Browse` button, and select the downloaded `.dll` file.
 6. Add `using ChaCha20Blake3;` to the top of each code file that will use the library.
 
-Note that the [libsodium](https://doc.libsodium.org/) library requires the [Visual C++ Redistributable for Visual Studio 2015-2019](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads) to work on Windows. If you want your program to be portable, then you must keep the relevant (x86 or x64) `vcruntime140.dll` file in the same folder as your executable on Windows.
+### Notes
+The [libsodium](https://doc.libsodium.org/) library requires the [Visual C++ Redistributable for Visual Studio 2015-2019](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads) to work on Windows. If you want your program to be portable, then you must keep the relevant (x86 or x64) `vcruntime140.dll` file in the same folder as your executable on Windows.
 
 ## Usage
 ### ChaCha20-BLAKE3
@@ -113,7 +114,7 @@ The following benchmarks were done using [BenchmarkDotNet](https://benchmarkdotn
 
 In sum, ChaCha20-BLAKE3 performs similarly to ChaCha20-Poly1305 and is even faster with large inputs. Whilst it is slower with small messages, I would argue that the additional security makes up for any performance loss.
 
-### 512 bytes
+#### 512 bytes
 |                     Method |     Mean |   Error |  StdDev |
 |:--------------------------:|:--------:|:--------:|:--------:|
 |      ChaCha20-BLAKE3.Encrypt | 1.504 us | 0.0027 us | 0.0024 us |
@@ -127,7 +128,7 @@ In sum, ChaCha20-BLAKE3 performs similarly to ChaCha20-Poly1305 and is even fast
 | XChaCha20-Poly1305.Encrypt | 865.1 ns | 1.24 ns | 0.97 ns |
 | XChaCha20-Poly1305.Decrypt | 888.1 ns | 4.23 ns | 3.75 ns |
 
-### 16 KiB
+#### 16 KiB
 |                     Method |     Mean |    Error |   StdDev |
 |:--------------------------:|:--------:|:--------:|:--------:|
 |      ChaCha20-BLAKE3.Encrypt | 25.49 us | 0.039 us | 0.032 us |
@@ -141,7 +142,7 @@ In sum, ChaCha20-BLAKE3 performs similarly to ChaCha20-Poly1305 and is even fast
 | XChaCha20-Poly1305.Encrypt | 16.76 us | 0.069 us | 0.058 us |
 | XChaCha20-Poly1305.Decrypt | 16.70 us | 0.020 us | 0.017 us |
 
-### 32 KiB
+#### 32 KiB
 |                       Method |     Mean |    Error |   StdDev |
 |:--------------------------:|:--------:|:--------:|:--------:|
 |      ChaCha20-BLAKE3.Encrypt | 40.38 us | 0.060 us | 0.056 us |
@@ -155,7 +156,7 @@ In sum, ChaCha20-BLAKE3 performs similarly to ChaCha20-Poly1305 and is even fast
 | XChaCha20-Poly1305.Encrypt | 32.85 us | 0.046 us | 0.039 us |
 | XChaCha20-Poly1305.Decrypt | 33.03 us | 0.093 us | 0.087 us |
 
-### 64 KiB
+#### 64 KiB
 |                     Method |     Mean |    Error |   StdDev |
 |:--------------------------:|:--------:|:--------:|:--------:|
 |      ChaCha20-BLAKE3.Encrypt | 63.93 us | 0.098 us | 0.091 us |
@@ -169,7 +170,7 @@ In sum, ChaCha20-BLAKE3 performs similarly to ChaCha20-Poly1305 and is even fast
 | XChaCha20-Poly1305.Encrypt | 65.43 us | 0.236 us | 0.197 us |
 | XChaCha20-Poly1305.Decrypt | 65.79 us | 0.584 us | 0.546 us |
 
-### 128 KiB
+#### 128 KiB
 |                     Method |     Mean |   Error |  StdDev |
 |:--------------------------:|:--------:|:--------:|:--------:|
 |      ChaCha20-BLAKE3.Encrypt | 208.2 us | 2.65 us | 2.48 us |
@@ -183,7 +184,7 @@ In sum, ChaCha20-BLAKE3 performs similarly to ChaCha20-Poly1305 and is even fast
 | XChaCha20-Poly1305.Encrypt | 180.9 us | 1.13 us | 1.00 us |
 | XChaCha20-Poly1305.Decrypt | 181.1 us | 1.45 us | 1.29 us |
 
-### 32 MiB
+#### 32 MiB
 |                     Method |     Mean |    Error |   StdDev |
 |:--------------------------:|:--------:|:--------:|:--------:|
 |      ChaCha20-BLAKE3.Encrypt | 44.08 ms | 0.814 ms | 0.937 ms |
