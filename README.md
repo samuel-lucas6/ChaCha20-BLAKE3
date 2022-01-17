@@ -105,4 +105,90 @@ byte[] plaintext = XChaCha20BLAKE3SIV.Decrypt(ciphertext, key, additionalData);
 ```
 
 ## Benchmarks
-TODO for v3.
+The following benchmarks were done using [BenchmarkDotNet](https://benchmarkdotnet.org/) in a [.NET 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) console application with 16 bytes of additional data.
+
+In sum, ChaCha20-BLAKE3 performs similarly to ChaCha20-Poly1305 and is even faster with large inputs. Whilst it is slower with small messages, I would argue that the additional security makes up for any performance loss.
+
+### 512 bytes
+|                     Method |     Mean |   Error |  StdDev |
+|:--------------------------:|:--------:|:--------:|:--------:|
+|      ChaCha20-BLAKE3.Encrypt | 1.504 us | 0.0027 us | 0.0024 us |
+|      ChaCha20-BLAKE3.Decrypt | 1.530 us | 0.0067 us | 0.0060 us |
+|     XChaCha20-BLAKE3.Encrypt | 1.601 us | 0.0012 us | 0.0010 us |
+|     XChaCha20-BLAKE3.Decrypt | 1.610 us | 0.0068 us | 0.0060 us |
+| XChaCha20-BLAKE3-SIV.Encrypt | 1.593 us | 0.0086 us | 0.0080 us |
+| XChaCha20-BLAKE3-SIV.Decrypt | 1.610 us | 0.0009 us | 0.0008 us |
+|  ChaCha20-Poly1305.Encrypt | 785.9 ns | 4.59 ns | 4.29 ns |
+|  ChaCha20-Poly1305.Decrypt | 793.6 ns | 1.25 ns | 0.98 ns |
+| XChaCha20-Poly1305.Encrypt | 865.1 ns | 1.24 ns | 0.97 ns |
+| XChaCha20-Poly1305.Decrypt | 888.1 ns | 4.23 ns | 3.75 ns |
+
+### 16 KiB
+|                     Method |     Mean |    Error |   StdDev |
+|:--------------------------:|:--------:|:--------:|:--------:|
+|      ChaCha20-BLAKE3.Encrypt | 25.49 us | 0.039 us | 0.032 us |
+|      ChaCha20-BLAKE3.Decrypt | 24.91 us | 0.026 us | 0.024 us |
+|     XChaCha20-BLAKE3.Encrypt | 25.75 us | 0.042 us | 0.039 us |
+|     XChaCha20-BLAKE3.Decrypt | 24.99 us | 0.051 us | 0.048 us |
+| XChaCha20-BLAKE3-SIV.Encrypt | 23.76 us | 0.030 us | 0.028 us |
+| XChaCha20-BLAKE3-SIV.Decrypt | 23.88 us | 0.024 us | 0.022 us |
+|  ChaCha20-Poly1305.Encrypt | 16.62 us | 0.049 us | 0.041 us |
+|  ChaCha20-Poly1305.Decrypt | 16.66 us | 0.096 us | 0.090 us |
+| XChaCha20-Poly1305.Encrypt | 16.76 us | 0.069 us | 0.058 us |
+| XChaCha20-Poly1305.Decrypt | 16.70 us | 0.020 us | 0.017 us |
+
+### 32 KiB
+|                       Method |     Mean |    Error |   StdDev |
+|:--------------------------:|:--------:|:--------:|:--------:|
+|      ChaCha20-BLAKE3.Encrypt | 40.38 us | 0.060 us | 0.056 us |
+|      ChaCha20-BLAKE3.Decrypt | 39.58 us | 0.035 us | 0.033 us |
+|     XChaCha20-BLAKE3.Encrypt | 40.53 us | 0.038 us | 0.032 us |
+|     XChaCha20-BLAKE3.Decrypt | 39.50 us | 0.048 us | 0.045 us |
+| XChaCha20-BLAKE3-SIV.Encrypt | 36.02 us | 0.673 us | 0.661 us |
+| XChaCha20-BLAKE3-SIV.Decrypt | 36.91 us | 0.034 us | 0.032 us |
+|  ChaCha20-Poly1305.Encrypt | 32.87 us | 0.051 us | 0.043 us |
+|  ChaCha20-Poly1305.Decrypt | 32.92 us | 0.187 us | 0.175 us |
+| XChaCha20-Poly1305.Encrypt | 32.85 us | 0.046 us | 0.039 us |
+| XChaCha20-Poly1305.Decrypt | 33.03 us | 0.093 us | 0.087 us |
+
+### 64 KiB
+|                     Method |     Mean |    Error |   StdDev |
+|:--------------------------:|:--------:|:--------:|:--------:|
+|      ChaCha20-BLAKE3.Encrypt | 63.93 us | 0.098 us | 0.091 us |
+|      ChaCha20-BLAKE3.Decrypt | 62.47 us | 0.142 us | 0.133 us |
+|     XChaCha20-BLAKE3.Encrypt | 64.31 us | 0.141 us | 0.131 us |
+|     XChaCha20-BLAKE3.Decrypt | 62.67 us | 0.084 us | 0.078 us |
+| XChaCha20-BLAKE3-SIV.Encrypt | 59.08 us | 0.053 us | 0.049 us |
+| XChaCha20-BLAKE3-SIV.Decrypt | 60.09 us | 0.052 us | 0.049 us |
+|  ChaCha20-Poly1305.Encrypt | 65.33 us | 0.182 us | 0.142 us |
+|  ChaCha20-Poly1305.Decrypt | 65.75 us | 0.529 us | 0.494 us |
+| XChaCha20-Poly1305.Encrypt | 65.43 us | 0.236 us | 0.197 us |
+| XChaCha20-Poly1305.Decrypt | 65.79 us | 0.584 us | 0.546 us |
+
+### 128 KiB
+|                     Method |     Mean |   Error |  StdDev |
+|:--------------------------:|:--------:|:--------:|:--------:|
+|      ChaCha20-BLAKE3.Encrypt | 208.2 us | 2.65 us | 2.48 us |
+|      ChaCha20-BLAKE3.Decrypt | 196.0 us | 2.56 us | 2.39 us |
+|     XChaCha20-BLAKE3.Encrypt | 208.1 us | 2.94 us | 2.60 us |
+|     XChaCha20-BLAKE3.Decrypt | 197.1 us | 2.65 us | 2.35 us |
+| XChaCha20-BLAKE3-SIV.Encrypt | 206.1 us | 2.82 us | 2.64 us |
+| XChaCha20-BLAKE3-SIV.Decrypt | 196.4 us | 3.14 us | 2.93 us |
+|  ChaCha20-Poly1305.Encrypt | 182.0 us | 1.15 us | 1.08 us |
+|  ChaCha20-Poly1305.Decrypt | 180.9 us | 1.49 us | 1.39 us |
+| XChaCha20-Poly1305.Encrypt | 180.9 us | 1.13 us | 1.00 us |
+| XChaCha20-Poly1305.Decrypt | 181.1 us | 1.45 us | 1.29 us |
+
+### 32 MiB
+|                     Method |     Mean |    Error |   StdDev |
+|:--------------------------:|:--------:|:--------:|:--------:|
+|      ChaCha20-BLAKE3.Encrypt | 44.08 ms | 0.814 ms | 0.937 ms |
+|      ChaCha20-BLAKE3.Decrypt | 42.88 ms | 0.736 ms | 0.653 ms |
+|     XChaCha20-BLAKE3.Encrypt | 41.90 ms | 0.812 ms | 0.967 ms |
+|     XChaCha20-BLAKE3.Decrypt | 42.31 ms | 0.653 ms | 0.579 ms |
+| XChaCha20-BLAKE3-SIV.Encrypt | 42.35 ms | 0.821 ms | 1.008 ms |
+| XChaCha20-BLAKE3-SIV.Decrypt | 42.39 ms | 0.694 ms | 0.649 ms |
+|  ChaCha20-Poly1305.Encrypt | 49.07 ms | 0.289 ms | 0.271 ms |
+|  ChaCha20-Poly1305.Decrypt | 48.68 ms | 0.171 ms | 0.143 ms |
+| XChaCha20-Poly1305.Encrypt | 49.02 ms | 0.150 ms | 0.140 ms |
+| XChaCha20-Poly1305.Decrypt | 48.77 ms | 0.195 ms | 0.173 ms |
