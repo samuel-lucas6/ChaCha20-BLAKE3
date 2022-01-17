@@ -22,6 +22,10 @@ Finally, (X)ChaCha20-BLAKE3 is a good combination for an Encrypt-then-MAC scheme
 2. BLAKE3 is [fast](https://github.com/BLAKE3-team/BLAKE3-specs/blob/master/blake3.pdf) and evolved from BLAKE, which received a [significant amount of cryptanalysis](https://nvlpubs.nist.gov/nistpubs/ir/2012/NIST.IR.7896.pdf), even more than Keccak (the SHA3 finalist), as part of the [SHA3 competition](https://competitions.cr.yp.to/sha3.html).
 
 ## Installation
+### NuGet
+You can find the NuGet package [here](https://www.nuget.org/packages/ChaCha20BLAKE3). The easiest way to install this is via the NuGet Package Manager in [Visual Studio](https://visualstudio.microsoft.com/vs/), as explained [here](https://docs.microsoft.com/en-us/nuget/quickstart/install-and-use-a-package-in-visual-studio). [JetBrains Rider](https://www.jetbrains.com/rider/) also has a package manager, and instructions can be found [here](https://www.jetbrains.com/help/rider/Using_NuGet.html).
+
+### Manual
 1. Install the [Sodium.Core](https://www.nuget.org/packages/Sodium.Core) and [Blake3.NET](https://www.nuget.org/packages/Blake3/) NuGet packages for your project in [Visual Studio](https://docs.microsoft.com/en-us/nuget/quickstart/install-and-use-a-package-in-visual-studio).
 2. Download the latest [release](https://github.com/samuel-lucas6/ChaCha20-BLAKE3/releases/latest).
 3. Move the downloaded `.dll` file into your project folder.
